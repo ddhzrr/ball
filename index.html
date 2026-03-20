@@ -6,88 +6,147 @@
 <title>SPEED BALL</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:#e8e4dc; font-family:-apple-system,BlinkMacSystemFont,sans-serif; display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; color:#111; }
-#app { width:100%; max-width:1400px; height:calc(100vh - 48px); min-height:580px; background:#f2ede4; border-radius:16px; overflow:hidden; display:flex; box-shadow:0 8px 40px rgba(0,0,0,0.18); border:1px solid rgba(0,0,0,0.1); }
-#canvas-wrap { flex:1; background:#fff; position:relative; min-width:0; cursor:none; border-right:1px solid rgba(0,0,0,0.08); }
-canvas { display:block; width:100%; height:100%; }
-#cursor { position:absolute; width:8px; height:8px; border-radius:50%; background:#111; pointer-events:none; transform:translate(-50%,-50%); transition:width .1s,height .1s; z-index:10; top:0; left:0; }
-#cursor.big { width:24px; height:24px; background:transparent; border:1.5px solid #111; }
-#canvas-topbar { position:absolute; top:14px; left:14px; right:14px; display:flex; align-items:center; justify-content:space-between; z-index:5; pointer-events:none; }
-#canvas-title { font-family:'Times New Roman',Times,serif; font-size:13px; font-weight:400; letter-spacing:0.18em; text-transform:uppercase; color:rgba(0,0,0,0.22); }
-#btn-svg-dl { pointer-events:all; background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.12); border-radius:8px; color:rgba(0,0,0,0.55); font-size:10px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; padding:7px 13px; cursor:pointer; transition:background .15s,color .15s; display:flex; align-items:center; gap:6px; }
-#btn-svg-dl:hover { background:rgba(0,0,0,0.1); color:#111; }
-#btn-svg-dl svg { width:12px; height:12px; }
-#text-input-wrap { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); z-index:5; }
-#text-input { background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.12); border-radius:8px; color:rgba(0,0,0,0.45); font-family:'Times New Roman',Times,serif; font-weight:400; font-size:11px; letter-spacing:0.22em; text-transform:uppercase; padding:7px 16px; text-align:center; outline:none; min-width:180px; transition:border-color .2s,color .2s; cursor:text; }
-#text-input:focus { border-color:rgba(0,0,0,0.3); color:#111; }
-#panel { width:290px; flex-shrink:0; background:#e8e4dc; display:flex; flex-direction:column; overflow:hidden; }
-#panel-logo { padding:20px 20px 16px; border-bottom:1px solid rgba(0,0,0,0.08); flex-shrink:0; }
-#logo-main { font-family:'Times New Roman',Times,serif; font-size:20px; font-weight:400; letter-spacing:0.04em; line-height:1; color:#111; }
-#panel-body { flex:1; overflow-y:auto; scrollbar-width:thin; scrollbar-color:rgba(0,0,0,0.1) transparent; }
-#panel-body::-webkit-scrollbar { width:3px; }
-#panel-body::-webkit-scrollbar-thumb { background:rgba(0,0,0,0.12); border-radius:2px; }
-.section { padding:14px 16px 12px; border-bottom:1px solid rgba(0,0,0,0.07); }
-.sec-title { font-size:9px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:rgba(0,0,0,0.35); margin-bottom:10px; }
-.bl-row { display:flex; background:rgba(0,0,0,0.06); border-radius:10px; padding:3px; gap:3px; }
-.bl-btn { flex:1; padding:8px 0; border:none; border-radius:8px; background:transparent; color:rgba(0,0,0,0.4); font-size:12px; font-weight:500; cursor:pointer; transition:all .18s; }
-.bl-btn.active { background:#fff; color:#111; box-shadow:0 1px 5px rgba(0,0,0,0.15); }
-.curve-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
-.cv-btn { background:rgba(0,0,0,0.05); border:1.5px solid transparent; border-radius:9px; padding:9px 7px; cursor:pointer; display:flex; align-items:center; justify-content:center; aspect-ratio:1.75; transition:all .15s; }
-.cv-btn:hover { background:rgba(0,0,0,0.08); }
-.cv-btn.active { background:#fff; border-color:rgba(0,0,0,0.2); box-shadow:0 1px 4px rgba(0,0,0,0.1); }
-.cv-btn svg { width:100%; height:26px; overflow:visible; }
-.italic-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
-.it-btn { background:rgba(0,0,0,0.05); border:1.5px solid transparent; border-radius:9px; padding:8px 4px; cursor:pointer; display:flex; align-items:center; justify-content:center; aspect-ratio:0.88; transition:all .15s; overflow:hidden; }
-.it-btn:hover { background:rgba(0,0,0,0.08); }
-.it-btn.active { background:#fff; border-color:rgba(0,0,0,0.2); box-shadow:0 1px 4px rgba(0,0,0,0.1); }
-.it-btn svg { width:100%; height:34px; overflow:visible; }
-.sl-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
-.sl-row:last-child { margin-bottom:0; }
-.sl-label { font-size:9px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(0,0,0,0.35); width:90px; flex-shrink:0; }
-.sl-val { font-size:11px; color:rgba(0,0,0,0.45); width:26px; text-align:right; flex-shrink:0; }
-input[type=range] { flex:1; -webkit-appearance:none; height:2px; border-radius:1px; background:rgba(0,0,0,0.15); outline:none; cursor:pointer; }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:12px; height:12px; border-radius:50%; background:#111; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.25); }
-.palette-grid { display:flex; flex-wrap:wrap; gap:5px; }
-.pal-swatch { width:22px; height:22px; border-radius:50%; border:1.5px solid transparent; cursor:pointer; transition:transform .12s,box-shadow .12s; flex-shrink:0; }
-.pal-swatch:hover { transform:scale(1.2); }
-.pal-swatch.active { box-shadow:0 0 0 2px #111; }
-.pal-swatch.striped { background:repeating-linear-gradient(45deg,#bbb 0px,#bbb 3px,#fff 3px,#fff 6px) !important; border-color:rgba(0,0,0,0.2); }
-#font-upload-wrap { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-#btn-font-upload { background:rgba(0,0,0,0.07); border:1px solid rgba(0,0,0,0.12); border-radius:8px; color:rgba(0,0,0,0.55); font-size:10px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; padding:7px 12px; cursor:pointer; transition:background .15s; white-space:nowrap; }
-#btn-font-upload:hover { background:rgba(0,0,0,0.12); color:#111; }
-#font-name { font-size:9.5px; color:rgba(0,0,0,0.4);  flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-#font-file { display:none; }
-.act-btn { display:block; width:100%; padding:11px 0; background:rgba(0,0,0,0.06); border:none; border-radius:9px; color:rgba(0,0,0,0.65); font-size:12.5px; font-weight:400; cursor:pointer; margin-bottom:6px; transition:background .15s,color .15s; text-align:center; }
-.act-btn:hover { background:rgba(0,0,0,0.12); color:#111; }
-.act-btn:last-child { margin-bottom:0; }
-#panel-footer { padding:12px 16px; border-top:1px solid rgba(0,0,0,0.07); display:flex; align-items:center; gap:8px; flex-shrink:0; }
-.footer-brand { font-size:9px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:rgba(0,0,0,0.2); }
-.footer-dot { width:3px; height:3px; border-radius:50%; background:rgba(0,0,0,0.2); }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#111;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;height:100vh;overflow:hidden;color:#111;}
+
+#app{width:100%;height:100vh;display:flex;overflow:hidden;}
+
+/* ── POSTER AREA ── */
+#poster-wrap{flex:1;position:relative;overflow:hidden;min-width:0;cursor:none;}
+
+#poster{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  padding:2% 3%;
+  overflow:hidden;
+  box-sizing:border-box;
+}
+
+.word-row{
+  flex:1;
+  display:flex;
+  align-items:flex-end;
+  transform-origin:left bottom;
+  overflow:hidden;
+  position:relative;
+}
+.word-row.align-top{align-items:flex-start;transform-origin:left top;}
+
+.char{
+  display:inline-block;
+  font-weight:700;
+  line-height:0.85;
+  flex-shrink:0;
+  transform-origin:center bottom;
+  will-change:transform;
+  user-select:none;
+}
+.char.align-top{transform-origin:center top;}
+
+/* cursor */
+#cursor{position:absolute;width:8px;height:8px;border-radius:50%;background:#111;pointer-events:none;transform:translate(-50%,-50%);transition:width .1s,height .1s;z-index:10;top:0;left:0;mix-blend-mode:difference;}
+#cursor.big{width:24px;height:24px;background:transparent;border:1.5px solid #111;}
+
+/* char transitions — smooth like Symphosizer */
+.char{transition:transform 0.06s cubic-bezier(0.25,0.46,0.45,0.94);}
+
+/* topbar */
+#canvas-topbar{position:absolute;top:14px;left:14px;right:14px;display:flex;align-items:center;justify-content:space-between;z-index:5;pointer-events:none;}
+#canvas-title{font-family:'Times New Roman',Times,serif;font-size:13px;font-weight:400;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.22);}
+.dl-btns{display:flex;gap:6px;pointer-events:all;}
+.dl-btn{background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.12);border-radius:8px;color:rgba(0,0,0,0.55);font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:7px 13px;cursor:pointer;transition:background .15s,color .15s;display:flex;align-items:center;gap:6px;}
+.dl-btn:hover{background:rgba(0,0,0,0.1);color:#111;}
+.dl-btn svg{width:12px;height:12px;}
+
+/* ── PANEL ── */
+#panel{width:290px;flex-shrink:0;background:#e8e4dc;display:flex;flex-direction:column;overflow:hidden;}
+#panel-logo{padding:20px 20px 14px;border-bottom:1px solid rgba(0,0,0,0.08);flex-shrink:0;}
+#logo-main{font-family:'Times New Roman',Times,serif;font-size:20px;font-weight:400;letter-spacing:0.04em;line-height:1;color:#111;}
+#panel-body{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(0,0,0,0.1) transparent;}
+#panel-body::-webkit-scrollbar{width:3px;}
+#panel-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.12);border-radius:2px;}
+
+.section{padding:14px 16px 12px;border-bottom:1px solid rgba(0,0,0,0.07);}
+.sec-title{font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:10px;}
+
+#text-input{width:100%;min-height:80px;resize:vertical;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.14);border-radius:8px;color:#111;font-family:'Times New Roman',Times,serif;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;padding:10px 12px;outline:none;line-height:1.5;transition:border-color .2s;}
+#text-input:focus{border-color:rgba(0,0,0,0.3);}
+.text-hint{font-size:8.5px;color:rgba(0,0,0,0.3);margin-top:5px;letter-spacing:0.05em;}
+
+.bl-row{display:flex;background:rgba(0,0,0,0.06);border-radius:10px;padding:3px;gap:3px;}
+.bl-btn{flex:1;padding:8px 0;border:none;border-radius:8px;background:transparent;color:rgba(0,0,0,0.4);font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;}
+.bl-btn.active{background:#fff;color:#111;box-shadow:0 1px 5px rgba(0,0,0,0.15);}
+
+.curve-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.cv-btn{background:rgba(0,0,0,0.05);border:1.5px solid transparent;border-radius:9px;padding:9px 7px;cursor:pointer;display:flex;align-items:center;justify-content:center;aspect-ratio:1.75;transition:all .15s;}
+.cv-btn:hover{background:rgba(0,0,0,0.08);}
+.cv-btn.active{background:#fff;border-color:rgba(0,0,0,0.2);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+.cv-btn svg{width:100%;height:26px;overflow:visible;}
+
+.italic-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.it-btn{background:rgba(0,0,0,0.05);border:1.5px solid transparent;border-radius:9px;padding:8px 4px;cursor:pointer;display:flex;align-items:center;justify-content:center;aspect-ratio:0.88;transition:all .15s;overflow:hidden;}
+.it-btn:hover{background:rgba(0,0,0,0.08);}
+.it-btn.active{background:#fff;border-color:rgba(0,0,0,0.2);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+.it-btn svg{width:100%;height:34px;overflow:visible;}
+
+.sl-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.sl-row:last-child{margin-bottom:0;}
+.sl-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.35);width:90px;flex-shrink:0;}
+.sl-val{font-size:11px;color:rgba(0,0,0,0.45);width:26px;text-align:right;flex-shrink:0;}
+input[type=range]{flex:1;-webkit-appearance:none;height:2px;border-radius:1px;background:rgba(0,0,0,0.15);outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#111;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.25);}
+
+.palette-grid{display:flex;flex-wrap:wrap;gap:5px;}
+.pal-swatch{width:22px;height:22px;border-radius:50%;border:1.5px solid transparent;cursor:pointer;transition:transform .12s,box-shadow .12s;flex-shrink:0;}
+.pal-swatch:hover{transform:scale(1.2);}
+.pal-swatch.active{box-shadow:0 0 0 2px #111;}
+.pal-swatch.striped{background:repeating-linear-gradient(45deg,#bbb 0px,#bbb 3px,#fff 3px,#fff 6px)!important;border-color:rgba(0,0,0,0.2);}
+
+#font-upload-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+#btn-font-upload{background:rgba(0,0,0,0.07);border:1px solid rgba(0,0,0,0.12);border-radius:8px;color:rgba(0,0,0,0.55);font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:7px 12px;cursor:pointer;transition:background .15s;white-space:nowrap;}
+#btn-font-upload:hover{background:rgba(0,0,0,0.12);color:#111;}
+#font-name{font-size:9.5px;color:rgba(0,0,0,0.4);font-style:italic;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#font-file{display:none;}
+
+.act-btn{display:block;width:100%;padding:11px 0;background:rgba(0,0,0,0.06);border:none;border-radius:9px;color:rgba(0,0,0,0.65);font-size:12.5px;font-weight:400;cursor:pointer;margin-bottom:6px;transition:background .15s,color .15s;text-align:center;}
+.act-btn:hover{background:rgba(0,0,0,0.12);color:#111;}
+.act-btn:last-child{margin-bottom:0;}
+
+#panel-footer{padding:12px 16px;border-top:1px solid rgba(0,0,0,0.07);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.footer-brand{font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(0,0,0,0.2);}
+.footer-dot{width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,0.2);}
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="canvas-wrap">
-    <canvas id="c"></canvas>
+
+  <!-- POSTER -->
+  <div id="poster-wrap">
+    <div id="poster"></div>
     <div id="cursor"></div>
     <div id="canvas-topbar">
       <div id="canvas-title">Speed Ball</div>
-      <button id="btn-svg-dl">
-        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 2v7M4 6l3 3 3-3M2 11h10"/></svg>
-        Скачать PNG
-      </button>
-    </div>
-    <div id="text-input-wrap">
-      <input id="text-input" type="text" value="SPEED BALL" maxlength="14" spellcheck="false">
+      <div class="dl-btns">
+        <button class="dl-btn" id="btn-png-dl">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 2v7M4 6l3 3 3-3M2 11h10"/></svg>PNG
+        </button>
+        <button class="dl-btn" id="btn-svg-dl">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M7 2v7M4 6l3 3 3-3M2 11h10"/></svg>SVG
+        </button>
+      </div>
     </div>
   </div>
 
+  <!-- PANEL -->
   <div id="panel">
-    <div id="panel-logo">
-      <div id="logo-main">Speed Ball</div>
-    </div>
+    <div id="panel-logo"><div id="logo-main">Speed Ball</div></div>
     <div id="panel-body">
+
+      <div class="section">
+        <div class="sec-title">Текст</div>
+        <textarea id="text-input" spellcheck="false">BALL</textarea>
+        <div class="text-hint">Каждая строка — отдельный ряд</div>
+      </div>
 
       <div class="section">
         <div class="sec-title">Базовая линия</div>
@@ -103,8 +162,8 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:12px; h
       </div>
 
       <div class="section">
-        <div class="sl-row"><span class="sl-label">Мин. высота</span><input type="range" id="sl-minh" min="0" max="90" value="0"><span class="sl-val" id="v-minh">0</span></div>
-        <div class="sl-row"><span class="sl-label">Макс. высота</span><input type="range" id="sl-maxh" min="10" max="100" value="100"><span class="sl-val" id="v-maxh">100</span></div>
+        <div class="sl-row"><span class="sl-label">Мин. высота</span><input type="range" id="sl-minh" min="5" max="90" value="10"><span class="sl-val" id="v-minh">10</span></div>
+        <div class="sl-row"><span class="sl-label">Макс. высота</span><input type="range" id="sl-maxh" min="20" max="100" value="100"><span class="sl-val" id="v-maxh">100</span></div>
       </div>
 
       <div class="section">
@@ -115,6 +174,12 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:12px; h
       <div class="section">
         <div class="sl-row"><span class="sl-label">Мин. наклон</span><input type="range" id="sl-mini" min="-50" max="50" value="0"><span class="sl-val" id="v-mini">0</span></div>
         <div class="sl-row"><span class="sl-label">Макс. наклон</span><input type="range" id="sl-maxi" min="-50" max="50" value="40"><span class="sl-val" id="v-maxi">40</span></div>
+      </div>
+
+      <div class="section">
+        <div class="sec-title">Кернинг и межстрочный</div>
+        <div class="sl-row"><span class="sl-label">Кернинг</span><input type="range" id="sl-kern" min="-20" max="80" value="0"><span class="sl-val" id="v-kern">0</span></div>
+        <div class="sl-row"><span class="sl-label">Межстрочный</span><input type="range" id="sl-lineh" min="60" max="140" value="100"><span class="sl-val" id="v-lineh">100</span></div>
       </div>
 
       <div class="section">
@@ -153,81 +218,78 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:12px; h
 </div>
 
 <script>
+// ── PALETTE ──
 const PALETTE=[
-  {hex:'#ffffff',label:'Белый',striped:true},
-  {hex:'#111111',label:'Чёрный'},
-  {hex:'#f0e8d8',label:'Кремовый'},
-  {hex:'#d4b896',label:'Бежевый'},
-  {hex:'#3d1c0c',label:'Тёмно-коричневый'},
-  {hex:'#7a4f2e',label:'Коричневый'},
-  {hex:'#c4a06a',label:'Хаки'},
-  {hex:'#f5cc2a',label:'Жёлтый'},
-  {hex:'#f58c14',label:'Оранжевый'},
-  {hex:'#e84020',label:'Красно-оранжевый'},
-  {hex:'#9e1a1a',label:'Тёмно-красный'},
-  {hex:'#e91e8c',label:'Розовый'},
-  {hex:'#cc44aa',label:'Маджента'},
-  {hex:'#9966cc',label:'Лавандовый'},
-  {hex:'#3377dd',label:'Синий'},
-  {hex:'#6699cc',label:'Стальной'},
-  {hex:'#88ccee',label:'Голубой'},
-  {hex:'#f0e8d0',label:'Тёплый белый'},
-  {hex:'#44aa99',label:'Бирюзовый'},
-  {hex:'#4a5c28',label:'Оливковый'},
-  {hex:'#1a3018',label:'Лесной'},
-  {hex:'#88cc44',label:'Лайм'},
-  {hex:'#aaddbb',label:'Мята'},
+  {hex:'#00A25C',label:'Зелёный'},{hex:'#FFFFF1',label:'Айвори'},
+  {hex:'#ffffff',label:'Белый',striped:true},{hex:'#111111',label:'Чёрный'},
+  {hex:'#f0e8d8',label:'Кремовый'},{hex:'#d4b896',label:'Бежевый'},
+  {hex:'#3d1c0c',label:'Тёмно-коричневый'},{hex:'#7a4f2e',label:'Коричневый'},
+  {hex:'#c4a06a',label:'Хаки'},{hex:'#f5cc2a',label:'Жёлтый'},
+  {hex:'#f58c14',label:'Оранжевый'},{hex:'#e84020',label:'Красно-оранжевый'},
+  {hex:'#9e1a1a',label:'Тёмно-красный'},{hex:'#e91e8c',label:'Розовый'},
+  {hex:'#cc44aa',label:'Маджента'},{hex:'#9966cc',label:'Лавандовый'},
+  {hex:'#3377dd',label:'Синий'},{hex:'#6699cc',label:'Стальной'},
+  {hex:'#88ccee',label:'Голубой'},{hex:'#f0e8d0',label:'Тёплый белый'},
+  {hex:'#44aa99',label:'Бирюзовый'},{hex:'#4a5c28',label:'Оливковый'},
+  {hex:'#1a3018',label:'Лесной'},{hex:'#88cc44',label:'Лайм'},{hex:'#aaddbb',label:'Мята'},
 ];
 
+// ── STATE ──
 const S={
-  text:'SPEED BALL', baseline:'bottom',
-  heightCurve:0, italicCurve:0,
-  minH:0, maxH:100, minI:0, maxI:40,
   textColor:'#111111', bgColor:'#ffffff',
+  baseline:'bottom',
+  heightCurve:0, italicCurve:0,
+  minH:10, maxH:100, minI:0, maxI:40,
+  kerning:0, lineH:100,
   fontFamily:"'Times New Roman',Times,serif",
 };
 
-let otFont=null, fontB64=null, fontMimeType='truetype', customFontCSSName=null;
+let otFont=null, fontB64=null, fontMimeType='truetype';
 const mouse={x:-9999, y:-9999, active:false};
-let cachedLayout=[];
 
-const DPR=Math.min(window.devicePixelRatio||1, 3);
+// Per-char animation values (keyed by global char index)
+const animH={};
 
-// ── HEIGHT CURVES ──
+// Flat char data built when layout changes
+let charData=[];  // {el, baseH, italic, gIdx}
+let buildPending=false;
+
+// ── CURVES ──
 const H_CURVES=[
   t=>t,
-  t=>{const d=Math.abs(t-0.5)*2;return 1-Math.pow(d,0.22);},     // острый ▲
+  t=>{const d=Math.abs(t-0.5)*2;return 1-Math.pow(d,0.22);},
   t=>Math.pow(Math.sin(Math.PI*t),0.7),
   t=>1-t,
-  t=>{const t2=(t%0.5)*2;const d=Math.abs(t2-0.5)*2;return 1-Math.pow(d,0.22);}, // двойной ▲▲
+  t=>{const t2=(t%0.5)*2;const d=Math.abs(t2-0.5)*2;return 1-Math.pow(d,0.22);},
   t=>Math.abs(2*t-1),
 ];
-const H_PATHS=[
-  'M6,24 L50,4',
-  'M6,24 L28,2 L50,24',
-  'M6,20 Q28,2 50,20',
-  'M6,4 L50,24',
-  'M6,24 L17,2 L28,24 L39,2 L50,24',
-  'M6,4 Q28,26 50,4',
-];
+const H_PATHS=['M6,24 L50,4','M6,24 L28,2 L50,24','M6,20 Q28,2 50,20','M6,4 L50,24','M6,24 L17,2 L28,24 L39,2 L50,24','M6,4 Q28,26 50,4'];
 const I_CURVES=[()=>0,t=>t,t=>t<0.5?2*t:2*(1-t),t=>t>0.5?2*(t-0.5):0];
 
-// ── PALETTE ──
-function buildPalette(cid,onSelect,activeHex){
+// ── PALETTE UI ──
+function buildPalette(cid,cb,activeHex){
   const c=document.getElementById(cid);c.innerHTML='';
   PALETTE.forEach(({hex,label,striped})=>{
     const sw=document.createElement('div');
     sw.className='pal-swatch'+(striped?' striped':'')+(hex===activeHex?' active':'');
     sw.dataset.hex=hex;sw.title=label;
     if(!striped)sw.style.background=hex;
-    const light=['#ffffff','#f0e8d8','#f0e8d0','#aaddbb','#88ccee','#f5cc2a','#d4b896'];
+    const light=['#ffffff','#f0e8d8','#f0e8d0','#aaddbb','#88ccee','#f5cc2a','#d4b896','#FFFFF1'];
     if(light.includes(hex))sw.style.borderColor='rgba(0,0,0,0.18)';
-    sw.addEventListener('click',()=>{c.querySelectorAll('.pal-swatch').forEach(s=>s.classList.remove('active'));sw.classList.add('active');onSelect(hex);});
+    sw.addEventListener('click',()=>{
+      c.querySelectorAll('.pal-swatch').forEach(s=>s.classList.remove('active'));
+      sw.classList.add('active');cb(hex);
+    });
     c.appendChild(sw);
   });
 }
-buildPalette('pal-text',h=>{S.textColor=h;},S.textColor);
-buildPalette('pal-bg',  h=>{S.bgColor=h;}, S.bgColor);
+buildPalette('pal-text',h=>{S.textColor=h;applyColors();},S.textColor);
+buildPalette('pal-bg',  h=>{S.bgColor=h; applyColors();},S.bgColor);
+
+function applyColors(){
+  document.getElementById('poster').style.background=S.bgColor;
+  document.querySelectorAll('.char').forEach(el=>el.style.color=S.textColor);
+}
 
 // ── CURVE BUTTONS ──
 const hGrid=document.getElementById('height-grid');
@@ -235,7 +297,7 @@ H_PATHS.forEach((path,i)=>{
   const b=document.createElement('button');
   b.className='cv-btn'+(i===0?' active':'');b.dataset.i=i;
   b.innerHTML=`<svg viewBox="0 0 56 28" fill="none"><path d="${path}" stroke="rgba(0,0,0,0.6)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>`;
-  b.onclick=()=>{S.heightCurve=i;hGrid.querySelectorAll('.cv-btn').forEach(x=>x.classList.toggle('active',+x.dataset.i===i));};
+  b.onclick=()=>{S.heightCurve=i;hGrid.querySelectorAll('.cv-btn').forEach(x=>x.classList.toggle('active',+x.dataset.i===i));scheduleBuild();};
   hGrid.appendChild(b);
 });
 
@@ -249,126 +311,198 @@ const iGrid=document.getElementById('italic-grid');
 I_SVG.forEach((svg,i)=>{
   const b=document.createElement('button');
   b.className='it-btn'+(i===0?' active':'');b.dataset.i=i;b.innerHTML=svg;
-  b.onclick=()=>{S.italicCurve=i;iGrid.querySelectorAll('.it-btn').forEach(x=>x.classList.toggle('active',+x.dataset.i===i));};
+  b.onclick=()=>{S.italicCurve=i;iGrid.querySelectorAll('.it-btn').forEach(x=>x.classList.toggle('active',+x.dataset.i===i));scheduleBuild();};
   iGrid.appendChild(b);
 });
 
-// ── CANVAS ──
-const canvas=document.getElementById('c');
-const ctx=canvas.getContext('2d');
-const cursorEl=document.getElementById('cursor');
-
-function cW(){return canvas.width/DPR;}
-function cH(){return canvas.height/DPR;}
-
-function resize(){
-  const wrap=canvas.parentElement;
-  canvas.width=Math.round(wrap.clientWidth*DPR);
-  canvas.height=Math.round(wrap.clientHeight*DPR);
-  canvas.style.width=wrap.clientWidth+'px';
-  canvas.style.height=wrap.clientHeight+'px';
-  ctx.setTransform(DPR,0,0,DPR,0,0);
+// ── HELPERS ──
+function getWords(){
+  return document.getElementById('text-input').value
+    .split('\n').filter(l=>l.trim())
+    .flatMap(line=>line.split(/\s+/).filter(Boolean))
+    .map(w=>w.toUpperCase());
 }
 
-// ── LAYOUT (static — no mouse baked in) ──
+// ── BUILD DOM ──
+// Each word = one flex row filling full poster width
+// Character font-size set by height curve (global index)
+// Row scaleX applied so the row fills available width
+function scheduleBuild(){
+  if(buildPending)return;
+  buildPending=true;
+  requestAnimationFrame(()=>{buildPending=false;buildLayout();});
+}
+
 function buildLayout(){
-  const W=cW(),H=cH();
-  const text=S.text.toUpperCase().trim();
-  const n=text.length;
-  if(!n){cachedLayout=[];return[];}
+  const poster=document.getElementById('poster');
+  const words=getWords();
+  poster.innerHTML='';
+  poster.style.background=S.bgColor;
+  charData=[];
 
-  const maxPx=H*(S.maxH/100), minPx=H*(S.minH/100);
-  function gh(i){const t=n===1?0.5:i/(n-1);return minPx+H_CURVES[S.heightCurve](t)*(maxPx-minPx);}
-  function gi(i){if(S.italicCurve===0)return 0;const t=n===1?0.5:i/(n-1);return S.minI+I_CURVES[S.italicCurve](t)*(S.maxI-S.minI);}
+  const posterH=poster.offsetHeight;
+  const posterW=poster.offsetWidth;
+  if(!posterH||!posterW||!words.length)return;
 
-  const letters=[];let totalW=0;
-  for(let i=0;i<n;i++){
-    const h=gh(i);
-    ctx.font=`700 ${h}px ${S.fontFamily}`;
-    const w=ctx.measureText(text[i]).width*1.04;
-    letters.push({char:text[i],h,w,italic:gi(i)});
-    totalW+=w;
+  const numRows=words.length;
+  const padPct=0.02;
+  const availH=posterH*(1-padPct*2);
+
+  // Band height = availH / numRows, scaled by lineH
+  const bandH=(availH/numRows)*(S.lineH/100);
+
+  const N=words.reduce((s,w)=>s+w.length,0);
+  const maxPx=bandH*(S.maxH/100);
+  const minPx=bandH*(S.minH/100);
+
+  function gh(g){
+    const t=N===1?0.5:g/(N-1);
+    return Math.max(4,minPx+H_CURVES[S.heightCurve](t)*(maxPx-minPx));
   }
-  const padX=W*0.04,availW=W-padX*2;
-  const sx=totalW>availW?availW/totalW:1;
-  let curX=(W-totalW*sx)/2;
+  function gi(g){
+    if(S.italicCurve===0)return 0;
+    const t=N===1?0.5:g/(N-1);
+    return S.minI+I_CURVES[S.italicCurve](t)*(S.maxI-S.minI);
+  }
 
-  cachedLayout=letters.map(({char,h,w,italic})=>{
-    const sw=w*sx,sh=h*sx,cx=curX+sw/2;
-    const anchorY=S.baseline==='bottom'?H*0.90:H*0.08+sh;
-    curX+=sw;
-    return{char,h,w,sw,sh,italic,cx,anchorY,sx};
-  });
-  return cachedLayout;
-}
+  const isBottom=S.baseline==='bottom';
+  let gIdx=0;
 
-// ── SMOOTH ANIMATED VALUES per letter ──
-let animH=[]; // animated height scale per letter (0..1 extra on top of base)
+  // poster flex direction: if bottom baseline, reverse so first word is at bottom
+  poster.style.flexDirection=isBottom?'column-reverse':'column';
+  poster.style.justifyContent='flex-start';
 
-function ensureAnimH(n){
-  while(animH.length<n) animH.push(0);
-  if(animH.length>n) animH.length=n;
-}
+  words.forEach((word,wi)=>{
+    const row=document.createElement('div');
+    row.className='word-row'+(isBottom?'':' align-top');
+    row.style.height=bandH+'px';
+    row.style.flex='0 0 '+bandH+'px';
 
-// ── RENDER LOOP ──
-// Mouse effect: gaussian bell on cursor X → extra height
-// The peak follows mouse.x, width = ~30% of canvas
-function render(){
-  requestAnimationFrame(render);
-  const W=cW(),H=cH();
-  ctx.fillStyle=S.bgColor;
-  ctx.fillRect(0,0,W,H);
+    for(const ch of word){
+      const h=gh(gIdx);
+      const italic=gi(gIdx);
+      const kern=S.kerning*h/200; // kerning as extra px per side
 
-  const layout=buildLayout();
-  const n=layout.length;
-  if(!n)return;
-  ensureAnimH(n);
+      const span=document.createElement('span');
+      span.className='char'+(isBottom?'':' align-top');
+      span.textContent=ch;
+      span.style.fontSize=h+'px';
+      span.style.fontFamily=S.fontFamily;
+      span.style.color=S.textColor;
+      if(kern>0||kern<0) span.style.padding=`0 ${kern}px`;
+      // italic via skew
+      span.dataset.baseSkew=italic;
+      span.dataset.gIdx=gIdx;
+      span.dataset.baseH=h;
 
-  const sigma=W*0.09; // narrow bell — sharp peak
-  const maxBoost=S.maxH/100*H*2.2; // max extra px height from mouse
-
-  layout.forEach(({char,h,sw,sh,italic,cx,anchorY,sx},i)=>{
-    // Mouse bell: how much extra height to add
-    let targetBoost=0;
-    if(mouse.active){
-      const dx=cx-mouse.x;
-      targetBoost=Math.exp(-(dx*dx)/(2*sigma*sigma));
+      charData.push({el:span,baseH:h,italic,gIdx});
+      row.appendChild(span);
+      gIdx++;
     }
-    // Spring toward target
-    animH[i]+=(targetBoost-animH[i])*0.28;
 
-    const t=animH[i];
-    const margin=H*0.04;
-    const maxSY=anchorY>margin?(anchorY-margin)/(h*sx):1;
-    const finalSY=Math.min(sx*(1+t*3.5), maxSY);
-    const finalSX=sx*(1-t*0.08);
+    poster.appendChild(row);
+  });
 
-    ctx.save();
-    ctx.translate(cx, anchorY);
-    ctx.scale(finalSX, finalSY);
-    if(italic!==0) ctx.transform(1,0,Math.tan(-italic*Math.PI/180),1,0,0);
-    ctx.font=`700 ${h}px ${S.fontFamily}`;
-    ctx.fillStyle=S.textColor;
-    ctx.textAlign='center';
-    ctx.textBaseline='alphabetic';
-    ctx.fillText(char,0,0);
-    ctx.restore();
+  // After DOM paints, apply scaleX to each row so it fills full width
+  requestAnimationFrame(()=>{
+    const availW=poster.offsetWidth;
+    document.querySelectorAll('.word-row').forEach(row=>{
+      row.style.transform='none';
+      row.style.transformOrigin=isBottom?'left bottom':'left top';
+      const natW=row.scrollWidth;
+      if(natW>0){
+        const sx=availW/natW;
+        row.style.transform=`scaleX(${sx})`;
+      }
+    });
+    // Cache positions after layout is stable
+    requestAnimationFrame(()=>cacheCharCenters());
   });
 }
 
-// ── MOUSE ──
-const cWrap=document.getElementById('canvas-wrap');
-cWrap.addEventListener('mousemove',e=>{
-  const rect=canvas.getBoundingClientRect();
+// ── MOUSE INTERACTION — like Symphosizer ──
+// CSS transitions handle smoothing, JS just sets the target value
+const cursorEl=document.getElementById('cursor');
+const posterWrap=document.getElementById('poster-wrap');
+
+// Cache char center positions (recalculated after build)
+let charCenters=[];
+function cacheCharCenters(){
+  if(!charData.length)return;
+  const pRect=posterWrap.getBoundingClientRect();
+  charCenters=charData.map(({el})=>{
+    const r=el.getBoundingClientRect();
+    return {
+      x: r.left+r.width/2-pRect.left,
+      y: r.top+r.height/2-pRect.top,
+    };
+  });
+}
+
+function applyMouseEffect(){
+  if(locked||!charData.length)return;
+  const W=posterWrap.offsetWidth;
+  const sigma=W*0.10; // bell width — controls how many letters react
+  const maxScale=3.8;  // max stretch factor
+  const isBottom=S.baseline==='bottom';
+
+  charData.forEach(({el,italic,gIdx},i)=>{
+    const cx=charCenters[i]?.x ?? -9999;
+    const dx=cx-mouse.x;
+    const influence=mouse.active
+      ? Math.exp(-(dx*dx)/(2*sigma*sigma))
+      : 0;
+
+    const scaleY=1+influence*(maxScale-1);
+    const origin=isBottom?'center bottom':'center top';
+    el.style.transformOrigin=origin;
+
+    const skew=italic!==0?` skewX(${-italic}deg)`:'';
+    el.style.transform=`scaleY(${scaleY.toFixed(4)})${skew}`;
+
+    // Store for exports
+    if(animH[gIdx]===undefined)animH[gIdx]=0;
+    animH[gIdx]=influence;
+  });
+}
+
+posterWrap.addEventListener('mousemove',e=>{
+  const rect=posterWrap.getBoundingClientRect();
   mouse.x=e.clientX-rect.left;
   mouse.y=e.clientY-rect.top;
   mouse.active=true;
   cursorEl.style.left=mouse.x+'px';
   cursorEl.style.top=mouse.y+'px';
+  applyMouseEffect();
 });
-cWrap.addEventListener('mouseleave',()=>{mouse.active=false;mouse.x=-9999;mouse.y=-9999;});
-cWrap.addEventListener('mousedown',()=>cursorEl.classList.add('big'));
-cWrap.addEventListener('mouseup',()=>cursorEl.classList.remove('big'));
+
+posterWrap.addEventListener('mouseleave',()=>{
+  mouse.active=false;
+  mouse.x=-9999;mouse.y=-9999;
+  if(!locked)applyMouseEffect();
+});
+posterWrap.addEventListener('mousedown',()=>cursorEl.classList.add('big'));
+posterWrap.addEventListener('mouseup',()=>cursorEl.classList.remove('big'));
+
+// ── CLICK = LOCK / UNLOCK ──
+let locked=false;
+const lockBadge=document.createElement('div');
+lockBadge.style.cssText='position:absolute;bottom:18px;left:50%;transform:translateX(-50%);z-index:9;font-size:9px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.9);background:rgba(0,0,0,0.5);padding:5px 14px;border-radius:20px;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap;';
+lockBadge.textContent='● ЗАФИКСИРОВАНО — клик для сброса';
+posterWrap.appendChild(lockBadge);
+
+posterWrap.addEventListener('click',()=>{
+  locked=!locked;
+  lockBadge.style.opacity=locked?'1':'0';
+  posterWrap.style.cursor=locked?'default':'none';
+  if(!locked){
+    charData.forEach(({el,italic,gIdx})=>{
+      const skew=italic!==0?` skewX(${-italic}deg)`:'';
+      el.style.transform=`scaleY(1)${skew}`;
+      if(animH[gIdx]!==undefined)animH[gIdx]=0;
+    });
+  }
+});
 
 // ── FONT UPLOAD ──
 document.getElementById('btn-font-upload').addEventListener('click',()=>document.getElementById('font-file').click());
@@ -383,121 +517,188 @@ document.getElementById('font-file').addEventListener('change',function(){
     const ext=file.name.split('.').pop().toLowerCase();
     fontMimeType=ext==='woff2'?'woff2':ext==='woff'?'woff':ext==='otf'?'opentype':'truetype';
     try{otFont=opentype.parse(ab);}catch(err){otFont=null;}
-    customFontCSSName='CF_'+Date.now();
+    const name='CF_'+Date.now();
     const style=document.createElement('style');
-    style.textContent=`@font-face{font-family:'${customFontCSSName}';src:url('data:font/${fontMimeType};base64,${fontB64}') format('${fontMimeType}');}`;
+    style.textContent=`@font-face{font-family:'${name}';src:url('data:font/${fontMimeType};base64,${fontB64}') format('${fontMimeType}');}`;
     document.head.appendChild(style);
-    S.fontFamily=`'${customFontCSSName}','Times New Roman',serif`;
+    S.fontFamily=`'${name}','Times New Roman',serif`;
     document.getElementById('font-name').textContent=file.name.replace(/\.[^.]+$/,'');
-    document.fonts.load(`700 48px '${customFontCSSName}'`).then(()=>{animH=[];});
+    document.fonts.load(`700 48px '${name}'`).then(()=>buildLayout());
   };
   reader.readAsArrayBuffer(file);
 });
 
-// ── SVG DOWNLOAD ──
-document.getElementById('btn-svg-dl').addEventListener('click',()=>{
-  const SCALE=3;
-  const W=cW(), H=cH();
-  const off=document.createElement('canvas');
-  off.width=Math.round(W*SCALE);
-  off.height=Math.round(H*SCALE);
-  const oc=off.getContext('2d');
-  oc.scale(SCALE,SCALE);
-
-  oc.fillStyle=S.bgColor;
-  oc.fillRect(0,0,W,H);
-
-  // Rebuild layout on offscreen ctx
-  const text=S.text.toUpperCase().trim();
-  const n=text.length;
-  if(!n)return;
-  const maxPx=H*(S.maxH/100), minPx=H*(S.minH/100);
-  function gh(i){const t=n===1?0.5:i/(n-1);return minPx+H_CURVES[S.heightCurve](t)*(maxPx-minPx);}
-  function gi(i){if(S.italicCurve===0)return 0;const t=n===1?0.5:i/(n-1);return S.minI+I_CURVES[S.italicCurve](t)*(S.maxI-S.minI);}
-  const letters=[];let totalW=0;
-  for(let i=0;i<n;i++){
-    const h=gh(i);
-    oc.font=`700 ${h}px ${S.fontFamily}`;
-    const w=oc.measureText(text[i]).width*1.04;
-    letters.push({char:text[i],h,w,italic:gi(i)});
-    totalW+=w;
-  }
-  const padX=W*0.04, availW=W-padX*2;
-  const sx=totalW>availW?availW/totalW:1;
-  let curX=(W-totalW*sx)/2;
-  const layout=letters.map(({char,h,w,italic})=>{
-    const sw=w*sx, sh=h*sx, cx=curX+sw/2;
-    const anchorY=S.baseline==='bottom'?H*0.90:H*0.08+sh;
-    curX+=sw;
-    return{char,h,sw,sh,italic,cx,anchorY,sx};
-  });
-
-  layout.forEach(({char,h,sh,italic,cx,anchorY,sx},i)=>{
-    const t=animH[i]||0;
-    const margin=H*0.04;
-    const maxSY=anchorY>margin?(anchorY-margin)/(h*sx):1;
-    const finalSY=Math.min(sx*(1+t*3.5),maxSY);
-    const finalSX=sx*(1-t*0.08);
+// ── PNG DOWNLOAD ──
+// Re-render current state to offscreen canvas at 3x
+// ── SHARED RENDER — reads exact DOM positions ──
+function renderToCtx(oc,W,H){
+  oc.fillStyle=S.bgColor;oc.fillRect(0,0,W,H);
+  const pRect=posterWrap.getBoundingClientRect();
+  const isBottom=S.baseline==='bottom';
+  charData.forEach(({el,italic})=>{
+    const r=el.getBoundingClientRect();
+    if(r.width<0.5||r.height<0.5)return;
+    const cx=r.left+r.width/2-pRect.left;
+    const baseY=isBottom?(r.bottom-pRect.top):(r.top-pRect.top);
+    const baseH=parseFloat(el.style.fontSize)||r.height;
+    oc.font=`700 ${baseH}px ${S.fontFamily}`;
+    const natW=oc.measureText(el.textContent).width||1;
+    const sx=r.width/natW;
+    const sy=r.height/baseH;
     oc.save();
-    oc.translate(cx,anchorY);
-    oc.scale(finalSX,finalSY);
-    if(italic!==0) oc.transform(1,0,Math.tan(-italic*Math.PI/180),1,0,0);
-    oc.font=`700 ${h}px ${S.fontFamily}`;
+    oc.translate(cx,baseY);
+    oc.scale(sx,sy);
+    if(italic!==0)oc.transform(1,0,Math.tan(-italic*Math.PI/180),1,0,0);
+    oc.font=`700 ${baseH}px ${S.fontFamily}`;
     oc.fillStyle=S.textColor;
     oc.textAlign='center';
     oc.textBaseline='alphabetic';
-    oc.fillText(char,0,0);
+    oc.fillText(el.textContent,0,0);
     oc.restore();
   });
+}
 
+document.getElementById('btn-png-dl').addEventListener('click',()=>{
+  const W=posterWrap.offsetWidth,H=posterWrap.offsetHeight,SC=3;
+  const off=document.createElement('canvas');
+  off.width=Math.round(W*SC);off.height=Math.round(H*SC);
+  const oc=off.getContext('2d');oc.scale(SC,SC);
+  renderToCtx(oc,W,H);
   off.toBlob(blob=>{
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
-    a.href=url; a.download='speed-ball.png'; a.click();
+    a.href=url;a.download='speed-ball.png';a.click();
     URL.revokeObjectURL(url);
   },'image/png');
-})
-// ── SLIDERS ──
-function linkSl(sid,vid,key){
-  const sl=document.getElementById(sid),vl=document.getElementById(vid);
-  sl.addEventListener('input',()=>{S[key]=+sl.value;vl.textContent=sl.value;animH=[];});
+});
+
+// ── SVG DOWNLOAD ──
+document.getElementById('btn-svg-dl').addEventListener('click',()=>{
+  if(!charData.length)return;
+  const W=posterWrap.offsetWidth,H=posterWrap.offsetHeight;
+  const pRect=posterWrap.getBoundingClientRect();
+  const isBottom=S.baseline==='bottom';
+  let els='';
+  const tmp=document.createElement('canvas').getContext('2d');
+
+  if(otFont){
+    charData.forEach(({el,italic})=>{
+      const r=el.getBoundingClientRect();
+      if(r.width<0.5||r.height<0.5)return;
+      const cx=r.left+r.width/2-pRect.left;
+      const baseY=isBottom?(r.bottom-pRect.top):(r.top-pRect.top);
+      const baseH=parseFloat(el.style.fontSize)||r.height;
+      const gw=otFont.getAdvanceWidth(el.textContent,baseH)||1;
+      const sx=(r.width/gw).toFixed(5);
+      const sy=(r.height/baseH).toFixed(5);
+      const gpath=otFont.getPath(el.textContent,0,0,baseH);
+      const d=gpath.toPathData(4);
+      const ox=(-gw/2).toFixed(3);
+      let tr=`translate(${cx.toFixed(2)},${baseY.toFixed(2)}) scale(${sx},${sy})`;
+      if(italic!==0)tr+=` matrix(1,0,${Math.tan(-italic*Math.PI/180).toFixed(5)},1,0,0)`;
+      els+=`<g transform="${tr}"><path d="${d}" transform="translate(${ox},0)" fill="${S.textColor}"/></g>\n`;
+    });
+    dlSVG(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">\n<rect width="${W}" height="${H}" fill="${S.bgColor}"/>\n${els}</svg>`);
+  } else {
+    let defs='';
+    if(fontB64) defs=`<defs><style>@font-face{font-family:'EF';font-weight:700;src:url('data:font/${fontMimeType};base64,${fontB64}') format('${fontMimeType}');}</style></defs>\n`;
+    const ff=fontB64?"'EF','Times New Roman',serif":"'Times New Roman',Times,serif";
+
+    charData.forEach(({el,italic})=>{
+      const r=el.getBoundingClientRect();
+      if(r.width<0.5||r.height<0.5)return;
+      const cx=r.left+r.width/2-pRect.left;
+      const baseY=isBottom?(r.bottom-pRect.top):(r.top-pRect.top);
+      const baseH=parseFloat(el.style.fontSize)||r.height;
+      tmp.font=`700 ${baseH}px ${S.fontFamily}`;
+      const natW=tmp.measureText(el.textContent).width||1;
+      const sx=(r.width/natW).toFixed(5);
+      const sy=(r.height/baseH).toFixed(5);
+      let tr=`translate(${cx.toFixed(2)},${baseY.toFixed(2)}) scale(${sx},${sy})`;
+      if(italic!==0)tr+=` matrix(1,0,${Math.tan(-italic*Math.PI/180).toFixed(5)},1,0,0)`;
+      const safe=el.textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+      els+=`<text transform="${tr}" font-family="${ff}" font-weight="700" font-size="${baseH.toFixed(2)}" fill="${S.textColor}" text-anchor="middle" dominant-baseline="alphabetic">${safe}</text>\n`;
+    });
+    dlSVG(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">\n${defs}<rect width="${W}" height="${H}" fill="${S.bgColor}"/>\n${els}</svg>`);
+  }
+});
+
+function dlSVG(str){
+  const blob=new Blob([str],{type:'image/svg+xml'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='speed-ball.svg';a.click();
+  URL.revokeObjectURL(url);
 }
-linkSl('sl-minh','v-minh','minH');linkSl('sl-maxh','v-maxh','maxH');
-linkSl('sl-mini','v-mini','minI');linkSl('sl-maxi','v-maxi','maxI');
 
-document.getElementById('bl-bottom').onclick=()=>{S.baseline='bottom';document.getElementById('bl-bottom').classList.add('active');document.getElementById('bl-top').classList.remove('active');animH=[];};
-document.getElementById('bl-top').onclick=()=>{S.baseline='top';document.getElementById('bl-top').classList.add('active');document.getElementById('bl-bottom').classList.remove('active');animH=[];};
-document.getElementById('text-input').addEventListener('input',e=>{S.text=e.target.value;animH=[];});
+// ── SLIDERS ──
+function linkSl(sid,vid,key,rebuild){
+  const sl=document.getElementById(sid),vl=document.getElementById(vid);
+  sl.value=S[key];vl.textContent=S[key];
+  sl.addEventListener('input',()=>{
+    S[key]=+sl.value;vl.textContent=sl.value;
+    if(rebuild)scheduleBuild();
+  });
+}
+linkSl('sl-minh','v-minh','minH',true);
+linkSl('sl-maxh','v-maxh','maxH',true);
+linkSl('sl-mini','v-mini','minI',true);
+linkSl('sl-maxi','v-maxi','maxI',true);
+linkSl('sl-kern','v-kern','kerning',true);
+linkSl('sl-lineh','v-lineh','lineH',true);
 
+// Baseline
+document.getElementById('bl-bottom').onclick=()=>{
+  S.baseline='bottom';
+  document.getElementById('bl-bottom').classList.add('active');
+  document.getElementById('bl-top').classList.remove('active');
+  scheduleBuild();
+};
+document.getElementById('bl-top').onclick=()=>{
+  S.baseline='top';
+  document.getElementById('bl-top').classList.add('active');
+  document.getElementById('bl-bottom').classList.remove('active');
+  scheduleBuild();
+};
+
+// Text input
+document.getElementById('text-input').addEventListener('input',()=>scheduleBuild());
+
+// Quick actions
 document.getElementById('btn-rand-all').onclick=()=>{
   S.heightCurve=Math.floor(Math.random()*6);S.italicCurve=Math.floor(Math.random()*4);
-  S.minH=Math.floor(Math.random()*25);S.maxH=Math.floor(Math.random()*30)+70;
+  S.minH=Math.floor(Math.random()*20)+5;S.maxH=Math.floor(Math.random()*25)+75;
   S.minI=Math.floor(Math.random()*10);S.maxI=Math.floor(Math.random()*40)+15;
-  syncUI();animH=[];
+  syncUI();scheduleBuild();
 };
 document.getElementById('btn-rand-h').onclick=()=>{
   S.heightCurve=Math.floor(Math.random()*6);
-  S.minH=Math.floor(Math.random()*25);S.maxH=Math.floor(Math.random()*30)+70;
-  syncUI();animH=[];
+  S.minH=Math.floor(Math.random()*20)+5;S.maxH=Math.floor(Math.random()*25)+75;
+  syncUI();scheduleBuild();
 };
 document.getElementById('btn-reset').onclick=()=>{
-  S.heightCurve=0;S.italicCurve=0;S.minH=0;S.maxH=100;S.minI=0;S.maxI=40;S.baseline='bottom';
-  syncUI();animH=[];
+  S.heightCurve=0;S.italicCurve=0;S.minH=10;S.maxH=100;S.minI=0;S.maxI=40;
+  S.kerning=0;S.lineH=100;S.baseline='bottom';
+  syncUI();scheduleBuild();
 };
 
 function syncUI(){
   hGrid.querySelectorAll('.cv-btn').forEach(b=>b.classList.toggle('active',+b.dataset.i===S.heightCurve));
   iGrid.querySelectorAll('.it-btn').forEach(b=>b.classList.toggle('active',+b.dataset.i===S.italicCurve));
-  [['minh','minH'],['maxh','maxH'],['mini','minI'],['maxi','maxI']].forEach(([k,K])=>{
-    document.getElementById('sl-'+k).value=S[K];
-    document.getElementById('v-'+k).textContent=S[K];
+  [['sl-minh','v-minh','minH'],['sl-maxh','v-maxh','maxH'],
+   ['sl-mini','v-mini','minI'],['sl-maxi','v-maxi','maxI'],
+   ['sl-kern','v-kern','kerning'],['sl-lineh','v-lineh','lineH']
+  ].forEach(([s,v,k])=>{
+    document.getElementById(s).value=S[k];
+    document.getElementById(v).textContent=S[k];
   });
   document.getElementById('bl-bottom').classList.toggle('active',S.baseline==='bottom');
   document.getElementById('bl-top').classList.toggle('active',S.baseline==='top');
 }
 
-window.addEventListener('resize',()=>{ctx.setTransform(1,0,0,1,0,0);resize();});
-document.fonts.ready.then(()=>{resize();render();});
+// ── INIT ──
+window.addEventListener('resize',()=>{scheduleBuild();setTimeout(cacheCharCenters,100);});
+document.fonts.ready.then(()=>buildLayout());
 </script>
 </body>
 </html>
